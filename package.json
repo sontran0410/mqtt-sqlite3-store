@@ -1,0 +1,22 @@
+{
+  "name": "mqtt-sqlite3-store",
+  "version": "0.0.1",
+  "description": "Simple MQTT temporary store with ratelimit output for QoS 1, 2 using sqlite3.",
+  "type": "module",
+  "main": "./store/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "tranuyson@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "mqtt": "^4.3.7",
+    "p-queue": "^7.3.0",
+    "readable-stream": "^4.2.0",
+    "sequelize": "^6.26.0",
+    "sqlite3": "^5.1.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
