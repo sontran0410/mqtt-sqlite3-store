@@ -17,7 +17,7 @@ Storing message when devices offline is one of the most important feature of IoT
 import mqtt from "mqtt";
 import SQliteStore from "mqtt-sqlite3-store";
 
-SQliteStore.create("./", { rateLimit: 100 }).then((store) => {
+SQliteStore.createStores("./", { rateLimit: 100 }).then((store) => {
   const client = mqtt.connect({
     host: "localhost",
     outgoingStore: store.outgoing,

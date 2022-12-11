@@ -4,6 +4,11 @@ import { Readable } from "readable-stream";
 import path from "path";
 import os from "os";
 import fs from "fs";
+import PQueue from "p-queue";
+
+async function delay(ms) {
+  return await new Promise((resolve) => setInterval(resolve, ms));
+}
 
 async function Sqlite3StoreFactory(sequelize) {
   // create new schema
@@ -59,6 +64,7 @@ class Store {
   }
   put(packet, _cb) {
     const cb = _cb || noop;
+
     this.store
       .findOne({ where: { messageId: packet.messageId } })
       .then((_packet) => {
@@ -89,24 +95,26 @@ class Store {
   }
   createStream() {
     const stream = new Readable({ objectMode: true });
+    const options = this._options;
     let destroyed = false,
-      skip = 0,
-      limit = this?._options?.limit || 500,
       db = this.store;
 
     stream._read = function () {
+      const queue = new PQueue({ concurrency: 1 });
       const that = this;
-      const _skip = skip;
-      skip += limit;
-      db.findAll({ limit, offset: _skip })
+      db.findAll()
         .then((packets) => {
           if (destroyed || !packets || 0 === packets.length) {
             return that.push(null);
           }
-          packets.forEach(function (packet, index) {
-            that.push(packet.toJSON());
+          packets.forEach(function (packet) {
+            queue.add(async () => {
+              await delay(1000 / (options.rateLimit || 1));
+              that.push(packet.toJSON());
+            });
           });
-          that.push(null);
+          //end of stream
+          queue.add(() => that.push(null));
         })
         .catch((err) => {
           if (err) {
@@ -187,7 +195,10 @@ class SQliteStore {
     this.outgoing = new Store(outgoingOptions);
     return {
       incoming: await Store.createStore(incomingOptions),
-      outgoing: await Store.createStore(outgoingOptions),
+      outgoing: await Store.createStore({
+        ...outgoingOptions,
+        rateLimit: options.rateLimit,
+      }),
     };
   }
 }

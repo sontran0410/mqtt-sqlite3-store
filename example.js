@@ -1,7 +1,7 @@
 import mqtt from "mqtt";
 import SQliteStore from "./store/index.js";
 
-SQliteStore.create("./", { rateLimit: 100 }).then((store) => {
+SQliteStore.createStores("./", { rateLimit: 1 }).then((store) => {
   const client = mqtt.connect({
     host: "172.23.98.26",
     outgoingStore: store.outgoing,
@@ -9,5 +9,9 @@ SQliteStore.create("./", { rateLimit: 100 }).then((store) => {
   client.on("connect", () => {
     console.log("connected to mqtt broker");
   });
-  client.publish("test", "hello word", { qos: 2 });
+  let i = 0;
+  setInterval(() => {
+    client.publish("test", "hello word " + i, { qos: 2 });
+    i++;
+  }, 100);
 });
