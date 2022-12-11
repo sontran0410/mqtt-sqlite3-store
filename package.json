@@ -1,8 +1,9 @@
 {
   "name": "mqtt-sqlite3-store",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Simple MQTT temporary store with ratelimit output for QoS 1, 2 using sqlite3.",
   "type": "module",
+  "types": "./store/index.d.ts",
   "main": "./store/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -18,5 +19,12 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
-  }
+  },
+  "keywords": [
+    "mqtt",
+    "store",
+    "QoS",
+    "IoT"
+  ],
+  "repository": "Noobmaster69-bug/mqtt-sqlite3-store"
 }
